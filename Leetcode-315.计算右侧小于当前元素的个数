@@ -1,0 +1,66 @@
+## Leetcode-315.计算右侧小于当前元素的个数
+给定一个整数数组 nums，按要求返回一个新数组 counts。数组 counts 有该性质： counts[i] 的值是  nums[i] 右侧小于 nums[i] 的元素的数量。
+示例:
+输入: [5,2,6,1]
+输出: [2,1,1,0] 
+解释:
+5 的右侧有 2 个更小的元素 (2 和 1).
+2 的右侧仅有 1 个更小的元素 (1).
+6 的右侧有 1 个更小的元素 (1).
+1 的右侧有 0 个更小的元素.
+
+**思路**：
+用二叉搜索树的思想去解决，把数组逆置，然后问题转变为求第i个位置，小于第i个位置之前的元素个数。
+边构建二叉搜索树，然后边计数该位置之前小于该位置上的元素的个数，在构建二叉搜索树结点的时候，多加入一个变量，用来记录小于二叉搜索树该位置上值的个数。
+最后把得到的树值逆置，即为原数组要求的个数。
+**代码**：
+ 
+
+       struct BSTNode{
+            int val;
+            int count;
+            BSTNode* left;
+            BSTNode* right;
+            BSTNode(int x):val(x), count(0), left(NULL), right(NULL){}
+        };
+        class Solution {
+        public:
+            void count_num(BSTNode* root, BSTNode* temp, int &count){
+                if(root->val >= temp->val){
+                    root->count++;
+                    if(root->left == NULL){
+                        root->left = temp;
+                    }else{
+                        count_num(root->left, temp, count);
+                    }
+                }else{
+                    count += root->count + 1;
+                    if(root->right == NULL){
+                        root->right = temp;
+                    }else{
+                        count_num(root->right, temp, count);
+                    }
+                }
+            }
+            vector<int> countSmaller(vector<int>& nums) {
+                vector<int> counts;
+                vector<BSTNode* > nodes;
+                vector<int> result;
+                for(int i = nums.size() - 1; i >= 0; i--){
+                    nodes.push_back(new BSTNode(nums[i]));
+                    counts.push_back(0);
+                }
+                for(int i = 1; i < nums.size(); i++){
+                    int count = 0;
+                    count_num(nodes[0], nodes[i], count);
+                    counts[i] = count;
+                }
+                
+                for(int i = nums.size() - 1; i >= 0; i--){
+                    delete nodes[i];
+                    result.push_back(counts[i]);
+                }
+                return result;
+            }
+        };
+     
