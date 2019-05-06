@@ -1,0 +1,62 @@
+Leetcode-628.三个数的最大乘积
+给定一个整型数组，在数组中找出由三个数组成的最大乘积，并输出这个乘积。
+示例 1:
+输入: [1,2,3]
+输出: 6
+示例 2:
+输入: [1,2,3,4]
+输出: 24
+注意:
+给定的整型数组长度范围是[3,104]，数组中所有的元素范围是[-1000, 1000]。
+输入的数组中任意三个数的乘积不会超出32位有符号整数的范围。
+
+思路：
+分别定义一个大顶堆和一个小顶堆，大顶堆存放两个负数，小顶堆存放最大的三个数值。
+最后比较小顶堆存放的三个数之积 与小顶堆中最大数和大顶堆两个负数的乘积的大小。
+返回较大的数。注意:需要判断是否获得了两个负数。
+代码：
+class Solution {
+public:
+    int maximumProduct(vector<int>& nums) {
+        priority_queue<int, vector<int>, less<int> > big_nums;
+        priority_queue<int, vector<int>, greater<int> > small_nums;
+        for(int i = 0; i < nums.size(); i++){
+            if(i < 3){
+                small_nums.push(nums[i]);
+            }else{
+                if(nums[i] > small_nums.top()){
+                    small_nums.pop();
+                    small_nums.push(nums[i]);
+                }
+            }
+            
+            if(big_nums.size() < 2 && nums[i] < 0){
+                big_nums.push(nums[i]);
+            }else if(nums[i] < 0 && nums[i] < big_nums.top()){
+                big_nums.pop();
+                big_nums.push(nums[i]);
+            }
+        }
+        int num1 = small_nums.top();
+        small_nums.pop();
+        int num2 = small_nums.top();
+        small_nums.pop();
+        int num3 = small_nums.top();
+        small_nums.pop();
+        int max = num1 * num2 * num3;
+        if(big_nums.size() == 2){
+            int num4 = big_nums.top();
+            big_nums.pop();
+            int num5 = big_nums.top();
+            big_nums.pop();
+            int max_1 = num3 * num4 * num5;
+            if(max > max_1){
+                return max;
+            }else{
+                return max_1;
+            }
+        }
+        return max;
+        
+    }
+};
