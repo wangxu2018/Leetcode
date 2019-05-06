@@ -1,0 +1,104 @@
+Leetcode-199.二叉树的右视图
+
+给定一棵二叉树，想象自己站在它的右侧，按照从顶部到底部的顺序，返回从右侧所能看到的节点值。
+示例:
+输入: [1,2,3,null,5,null,4]
+输出: [1, 3, 4]
+解释:
+
+   1            <---
+ /   \
+2     3         <---
+ \     \
+  5     4       <---
+
+思路1：
+初始两个队列1和队列2，和结果res，按照层次遍历的思想遍历树，
+把头节点放入队列1；
+头节点放入res；
+循环判断队列1是不是为空：
+右节点不为空，把右节点放入队列2；
+左节点不为空，左节点放入队列2；
+如果队列1为空：
+存放队列2中第一个结点到res
+队列2全部移入队列1；
+队列2清空。
+res为最后的结果；
+代码1：
+class Solution {
+public:
+    void bfs(TreeNode* root, vector<int>& res){
+        queue<TreeNode* > tree_node;
+        queue<TreeNode* > tree_node1;
+
+        res.push_back(root->val);
+        tree_node.push(root);
+        while(!tree_node.empty()){
+            TreeNode* temp = tree_node.front();
+            tree_node.pop();
+            if(temp->right != NULL){
+                tree_node1.push(temp->right);
+            }
+            if(temp->left != NULL){
+                tree_node1.push(temp->left);
+            }
+
+            if(tree_node.empty() && !tree_node1.empty()){
+                temp = tree_node1.front();
+                res.push_back(temp->val);
+                tree_node = tree_node1;
+                while(!tree_node1.empty()){
+                    tree_node1.pop();
+                }
+            }
+        }
+    }
+    vector<int> rightSideView(TreeNode* root) {
+        vector<int> res;
+        if(root == NULL){
+            return {};
+        }
+        bfs(root, res);
+        return res;
+    }
+};
+思路2：
+用pair<TreeNode* , int> node； 其中node.second存放结点所在的层数，层次遍历所有节点，先遍历右节点，再遍历左节点，放入每一层的第一个结点到res。
+代码2：
+class Solution {
+public:
+    vector<int> rightSideView(TreeNode* root) {
+        if(root == NULL){
+            return {};
+        }
+        queue<pair<TreeNode* , int> > tree_node;
+        vector<int> res;
+        pair<TreeNode* , int> temp;        
+        pair<TreeNode* , int> temp2;
+        temp.first = root;
+        temp.second = 0;
+        tree_node.push(temp);
+        res.push_back(root->val);
+        int temp_second = 0;
+        while(!tree_node.empty()){
+            temp = tree_node.front();
+            if(temp_second != temp.second){
+                temp_second = temp.second;
+                res.push_back(temp.first->val);
+            }
+            tree_node.pop();
+            if(temp.first->right != NULL){
+                temp2.first = temp.first->right;
+                temp2.second = temp.second + 1;
+                tree_node.push(temp2);
+            }
+            if(temp.first->left != NULL){
+                temp2.first = temp.first->left;
+                temp2.second = temp.second + 1;
+                tree_node.push(temp2);
+            }
+        }
+        
+        return res;
+    }
+};
