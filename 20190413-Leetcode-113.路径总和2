@@ -1,0 +1,43 @@
+Leetcode-113.路径总和2
+给定一个二叉树和一个目标和，找到所有从根节点到叶子节点路径总和等于给定目标和的路径。
+说明: 叶子节点是指没有子节点的节点。
+示例: 给定如下二叉树，以及目标和 sum = 22
+              5
+             / \
+            4   8
+           /   / \
+          11  13  4
+         /  \    / \
+        7    2  5   1
+返回:
+[
+   [5,4,11,2],
+   [5,8,4,5]
+]
+
+思路：
+递归依次遍历所有的路径，并记录路径之和，若路径之和等于所给值，则把该路径加入结果中。
+代码：
+class Solution {
+public:
+    void preorder(TreeNode* root, int now_sum, int sum, vector<int>& temp, vector<vector<int> >& res){
+        if(root == NULL){
+            return;
+        }
+        now_sum = root->val + now_sum;
+        temp.push_back(root->val);
+        if(now_sum == sum && root->left == NULL  &&  root->right == NULL){
+            res.push_back(temp);
+        }
+        preorder(root->left, now_sum, sum, temp, res);
+        preorder(root->right, now_sum, sum, temp, res);
+        temp.pop_back();
+        now_sum = now_sum - root->val;
+    }
+    vector<vector<int>> pathSum(TreeNode* root, int sum) {
+        vector<vector<int> > res;
+        vector<int> temp;
+        preorder(root, 0, sum, temp, res);
+        return res;
+    }
+};
