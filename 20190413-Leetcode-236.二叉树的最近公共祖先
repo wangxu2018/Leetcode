@@ -1,0 +1,63 @@
+Leetcode-236.二叉树的最近公共祖先
+给定一个二叉树, 找到该树中两个指定节点的最近公共祖先。
+例如，给定如下二叉树:  root = [3,5,1,6,2,0,8,null,null,7,4]
+
+
+示例 1:
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+输出: 3
+解释: 节点 5 和节点 1 的最近公共祖先是节点 3。
+示例 2:
+输入: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+输出: 5
+解释: 节点 5 和节点 4 的最近公共祖先是节点 5。因为根据定义最近公共祖先节点可以为节点本身。
+说明:
+所有节点的值都是唯一的。
+p、q 为不同节点且均存在于给定的二叉树中。
+
+思路：
+依次递归遍历树节点，若是找到目标结点，则保存目标结点的路径，并返回。同时找到两个结点的所有祖先，然后，依次遍历该祖先，返回最后相同的那个祖先。
+代码：
+class Solution {
+public:
+    void find_path(int& flag, TreeNode* root, TreeNode* p, vector<TreeNode*>& path, vector<TreeNode*>& result){
+        if(root == NULL || flag == 1){
+            return;
+        }
+        path.push_back(root);
+        if(root == p){
+            flag = 1;
+            result = path;
+            return;
+        }
+        find_path(flag, root->left, p, path, result);
+        find_path(flag, root->right, p, path, result);
+        path.pop_back();
+    }
+    
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        int flag = 0;
+        vector<TreeNode*> path;
+        vector<TreeNode*> p_path;
+        vector<TreeNode*> q_path;
+        TreeNode* res;
+        find_path(flag, root, p, path, p_path);
+        flag = 0;
+        path.clear();
+        find_path(flag, root, q, path, q_path);
+        int min_size;
+        if(p_path.size() > q_path.size()){
+            min_size = q_path.size();
+        }else{
+            min_size = p_path.size();
+        }
+        
+        for(int i = 0; i < min_size; i++){
+            if(p_path[i] == q_path[i]){
+                res = p_path[i];
+            }
+        }
+        
+        return res;
+    }
+};
