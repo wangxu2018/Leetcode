@@ -1,0 +1,42 @@
+leetcode-114.二叉树展开为链表
+给定一个二叉树，原地将它展开为链表。
+例如，给定二叉树
+    1
+   / \
+  2   5
+ / \   \
+3   4   6
+将其展开为：
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+思路1：把所有树的所有结点先序遍历放在vector中，然后依次连接，连接所有的结点。
+代码1：
+class Solution {
+public:
+    void preorder(TreeNode* root, vector<TreeNode* >& tree_list){
+        if(root == NULL){
+            return;
+        }    
+        tree_list.push_back(root);
+        preorder(root->left, tree_list);
+        preorder(root->right, tree_list);
+    }
+    
+    void flatten(TreeNode* root) {
+        vector<TreeNode* > tree_list;
+        preorder(root, tree_list);
+        for(int i = 1; i < tree_list.size(); i++){
+            tree_list[i - 1]->right = tree_list[i];
+            tree_list[i - 1]->left = NULL;
+        }
+    }
+};
